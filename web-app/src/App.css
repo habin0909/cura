@@ -1,0 +1,483 @@
+/* ======================================
+   CURA 메인 디자인 v4
+   - 여백 대폭 확대 (2배)
+   - 구분선 완벽 대칭
+   - 섹션 간 명확한 구분
+   ====================================== */
+
+.app {
+  min-height: 100vh;
+  background: #0a0613;
+  color: #e8e2f5;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ======================================
+   우상단 BETA 배지
+   ====================================== */
+.beta-badge {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  z-index: 10;
+  padding: 6px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 100px;
+  background: rgba(139, 92, 246, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+/* ======================================
+   ⭐ 상단 영역 
+   - padding-top: 80 → 90
+   - padding-bottom: 40 → 100 (구분선 위 여백)
+   ====================================== */
+.top-section {
+  text-align: center;
+  padding: 90px 32px 100px 32px;
+  position: relative;
+  z-index: 2;
+  background: #0a0613;
+}
+
+.logo {
+  width: 51px;
+  height: 51px;
+  margin: 0 auto 4px auto;
+  display: block;
+  animation: logo-float 3.3s ease-in-out infinite;
+}
+
+@keyframes logo-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.brand-name {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: 14px;
+  margin: 0 0 14px 0;
+  color: #f5f0ff;
+  padding-left: 14px;
+  
+  opacity: 0;
+  animation: text-float-in 0.9s ease-out 0.2s forwards;
+}
+
+.brand-tagline {
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 4px;
+  color: #9b8fc4;
+  margin: 0;
+  text-transform: uppercase;
+  
+  opacity: 0;
+  animation: text-float-in 0.9s ease-out 0.7s forwards;
+}
+
+@keyframes text-float-in {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ======================================
+   ⭐ 구분선 (margin-top 제거 - 대칭 위해)
+   ====================================== */
+.divider {
+  width: 100%;
+  max-width: 400px;
+  height: 1px;
+  margin: 0 auto;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(139, 92, 246, 0.3) 50%,
+    transparent 100%
+  );
+  position: relative;
+  z-index: 2;
+}
+
+/* ======================================
+   ⭐ 메인 영역 (여백 확대 + 대칭)
+   - padding-top: 40 → 97 (구분선 아래 여백)
+   - padding-bottom: 40 → 165 (카드 아래 여백)
+   ====================================== */
+.main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 97px 32px 165px 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 파도 글로우 */
+.gradient-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 800px;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.gradient-bg::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(139, 92, 246, 0.35) 0%,
+    rgba(139, 92, 246, 0.15) 30%,
+    transparent 60%
+  );
+  filter: blur(60px);
+  animation: glow-flow-1 6.7s ease-in-out infinite;
+  transform: translateX(-50%);
+}
+
+.gradient-bg::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: 700px;
+  height: 600px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(167, 139, 250, 0.25) 0%,
+    rgba(167, 139, 250, 0.1) 40%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  animation: glow-flow-2 8.3s ease-in-out infinite;
+  animation-delay: -1.7s;
+  transform: translateX(-50%);
+}
+
+.gradient-bg-extra {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: 600px;
+  height: 500px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(196, 181, 253, 0.2) 0%,
+    rgba(124, 58, 237, 0.1) 40%,
+    transparent 70%
+  );
+  filter: blur(70px);
+  animation: glow-flow-3 10s ease-in-out infinite;
+  animation-delay: -3.3s;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes glow-flow-1 {
+  0%, 100% {
+    transform: translateX(-80%) scale(1);
+    opacity: 0.7;
+  }
+  33% {
+    transform: translateX(-30%) scale(1.2);
+    opacity: 1;
+  }
+  66% {
+    transform: translateX(-70%) scale(0.9);
+    opacity: 0.8;
+  }
+}
+
+@keyframes glow-flow-2 {
+  0%, 100% {
+    transform: translateX(-20%) scale(1);
+    opacity: 0.6;
+  }
+  40% {
+    transform: translateX(-60%) scale(1.3);
+    opacity: 0.9;
+  }
+  70% {
+    transform: translateX(-10%) scale(1.1);
+    opacity: 0.7;
+  }
+}
+
+@keyframes glow-flow-3 {
+  0%, 100% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: translate(-30%, -20px) scale(1.1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-60%, 10px) scale(0.95);
+    opacity: 0.6;
+  }
+  75% {
+    transform: translate(-40%, -10px) scale(1.15);
+    opacity: 0.9;
+  }
+}
+
+/* ======================================
+   ⭐ Hero 섹션 (여백 확대)
+   - padding-top: 80 → 0 (main이 담당)
+   - padding-bottom: 120 → 155 (Hero ↔ 카드 간격)
+   ====================================== */
+.hero {
+  text-align: center;
+  padding: 0 0 155px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-title {
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #f5f0ff;
+  margin-bottom: 32px;
+  letter-spacing: -0.04em;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 50%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+.hero-desc {
+  font-size: 17px;
+  color: #b8aed4;
+  line-height: 1.8;
+  margin-bottom: 48px;
+  font-weight: 400;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ======================================
+   버튼
+   ====================================== */
+.btn {
+  padding: 16px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border-radius: 100px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 140px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: #ffffff;
+  box-shadow: 
+    0 4px 20px rgba(139, 92, 246, 0.3),
+    0 0 40px rgba(139, 92, 246, 0.1);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 30px rgba(139, 92, 246, 0.5),
+    0 0 60px rgba(139, 92, 246, 0.2);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.btn-ghost:hover {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #f5f0ff;
+}
+
+/* ======================================
+   ⭐ Feature 카드 (균형 잡힌 여백 버전)
+   ====================================== */
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.feature-card {
+  padding: 40px 32px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.feature-card:hover {
+  background: rgba(139, 92, 246, 0.05);
+  border-color: rgba(139, 92, 246, 0.25);
+  transform: translateY(-4px);
+}
+
+/* 🔥 핵심 수정 부분 */
+.feature-number {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #8b5cf6;
+  margin-bottom: 20px; /* ↓ 기존 24 → 20 */
+}
+
+.feature-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f5f0ff;
+  margin-bottom: 16px; /* ↑ 기존 12 → 16 */
+  letter-spacing: -0.02em;
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: #9b8fc4;
+  line-height: 1.7;
+  font-weight: 400;
+  margin-bottom: 28px; /* ✅ 새로 추가 */
+}
+
+/* ======================================
+   푸터
+   ====================================== */
+.footer {
+  padding: 60px 32px 40px 32px;
+  text-align: center;
+  border-top: 1px solid rgba(139, 92, 246, 0.08);
+  position: relative;
+  z-index: 1;
+}
+
+.footer-brand {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: #c4b5fd;
+  margin-bottom: 12px;
+  padding-left: 6px;
+}
+
+.footer-copy {
+  font-size: 12px;
+  color: #6b5b95;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* ======================================
+   ⭐ 반응형 (모바일) - 여백 비율 유지
+   ====================================== */
+@media (max-width: 768px) {
+  .beta-badge {
+    top: 20px;
+    right: 20px;
+  }
+
+  /* 모바일: 상단 100px, 구분선 위 60px */
+  .top-section {
+    padding: 100px 24px 60px 24px;
+  }
+
+  .logo {
+    width: 39px;
+    height: 39px;
+    margin-bottom: 3px;
+  }
+
+  .brand-name {
+    font-size: 34px;
+    letter-spacing: 10px;
+    padding-left: 10px;
+  }
+
+  .brand-tagline {
+    font-size: 12px;
+    letter-spacing: 3px;
+  }
+
+  /* 모바일: 구분선 아래 60px, 카드 아래 120px */
+  .main {
+    padding: 60px 24px 120px 24px;
+  }
+
+  /* 모바일: Hero ↔ 카드 140px */
+  .hero {
+    padding: 0 0 140px 0;
+  }
+
+  .hero-desc {
+    font-size: 15px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .feature-card {
+    padding: 32px 24px;
+  }
+}
