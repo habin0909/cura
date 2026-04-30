@@ -10,9 +10,10 @@ import {
 import { fetchAllPlaces } from '../lib/places'
 import { addToCollection, removeFromCollection, isInCollection } from '../lib/collections'
 import { useUserStore } from '../store/userStore.js'
+import { signInWithGoogle, signOut } from '../lib/auth'
 import '../App.css'
 
-// CURA 미니멀 차콜 + 보라 라벨 v5
+// CURA 미니멀 차콜 + 보라 라벨 v6
 const curaMapStyle = [
   { elementType: 'geometry', stylers: [{ color: '#2a2a30' }] },
   { elementType: 'labels.text.fill', stylers: [{ color: '#a8a0c4' }] },
@@ -41,8 +42,30 @@ const curaMapStyle = [
   { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#0a0613' }, { weight: 2 }] }
 ]
 
+// 17개 시·도 정보 (시청/도청 좌표)
+const KOREA_CITIES = [
+  { id: 'seoul', name: '서울', fullName: '서울특별시', lat: 37.5665, lng: 126.9780 },
+  { id: 'busan', name: '부산', fullName: '부산광역시', lat: 35.1796, lng: 129.0756 },
+  { id: 'daegu', name: '대구', fullName: '대구광역시', lat: 35.8714, lng: 128.6014 },
+  { id: 'incheon', name: '인천', fullName: '인천광역시', lat: 37.4563, lng: 126.7052 },
+  { id: 'gwangju', name: '광주', fullName: '광주광역시', lat: 35.1595, lng: 126.8526 },
+  { id: 'daejeon', name: '대전', fullName: '대전광역시', lat: 36.3504, lng: 127.3845 },
+  { id: 'ulsan', name: '울산', fullName: '울산광역시', lat: 35.5384, lng: 129.3114 },
+  { id: 'sejong', name: '세종', fullName: '세종특별자치시', lat: 36.4800, lng: 127.2890 },
+  { id: 'gyeonggi', name: '경기', fullName: '경기도', lat: 37.2750, lng: 127.0094 },
+  { id: 'chungbuk', name: '충북', fullName: '충청북도', lat: 36.6357, lng: 127.4914 },
+  { id: 'chungnam', name: '충남', fullName: '충청남도', lat: 36.6588, lng: 126.6728 },
+  { id: 'gyeongbuk', name: '경북', fullName: '경상북도', lat: 36.5759, lng: 128.5056 },
+  { id: 'gyeongnam', name: '경남', fullName: '경상남도', lat: 35.2383, lng: 128.6924 },
+  { id: 'jeonnam', name: '전남', fullName: '전라남도', lat: 34.8161, lng: 126.4630 },
+  { id: 'gangwon', name: '강원', fullName: '강원특별자치도', lat: 37.8854, lng: 127.7298 },
+  { id: 'jeonbuk', name: '전북', fullName: '전북특별자치도', lat: 35.8203, lng: 127.1088 },
+  { id: 'jeju', name: '제주', fullName: '제주특별자치도', lat: 33.4996, lng: 126.5312 }
+]
+
+// 기본 마커 (저장 안 됨) - 하트와 동일한 19px 가로폭
 const curaMarkerSvg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+<svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 30 30">
   <defs>
     <radialGradient id="grad" cx="35%" cy="30%" r="65%">
       <stop offset="0%" stop-color="#f5f0ff"/>
@@ -51,45 +74,88 @@ const curaMarkerSvg = `
       <stop offset="100%" stop-color="#7c3aed"/>
     </radialGradient>
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
       <feMerge>
         <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
-  <circle cx="20" cy="20" r="14" fill="#8b5cf6" opacity="0.3" filter="url(#glow)"/>
-  <circle cx="20" cy="20" r="9" fill="url(#grad)" stroke="#f5f0ff" stroke-width="2"/>
+  <circle cx="15" cy="15" r="11" fill="#8b5cf6" opacity="0.3" filter="url(#glow)"/>
+  <circle cx="15" cy="15" r="9.5" fill="url(#grad)" stroke="#f5f0ff" stroke-width="1.8"/>
 </svg>
 `
 const curaMarkerIcon = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(curaMarkerSvg)}`
 
+// 💜 저장된 마커 (원형 마커와 통일감 - 흰색 외곽선 + 보라 블러 글로우) - 30px
+const savedMarkerSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+  <defs>
+    <filter id="heartGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <radialGradient id="heartGrad" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </radialGradient>
+    <filter id="heartHighlightBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="0.8"/>
+    </filter>
+  </defs>
+  <!-- 보라 블러 글로우 (원형 마커와 통일) -->
+  <ellipse cx="15" cy="16" rx="11" ry="10.5" fill="#8b5cf6" opacity="0.3" filter="url(#heartGlow)"/>
+  <!-- 가로폭 19px 하트 + 흰색 외곽선 -->
+  <path d="M15 25 
+           C 15 25, 5.5 18, 5.5 11.5 
+           C 5.5 8.2, 7.5 5.8, 10.2 5.8 
+           C 12.4 5.8, 13.8 6.9, 15 8.6 
+           C 16.2 6.9, 17.6 5.8, 19.8 5.8 
+           C 22.5 5.8, 24.5 8.2, 24.5 11.5 
+           C 24.5 18, 15 25, 15 25 Z" 
+        fill="url(#heartGrad)"
+        stroke="#f5f0ff"
+        stroke-width="1.8"
+        stroke-linejoin="round"/>
+  <!-- 자연스러운 블러 하이라이트 -->
+  <ellipse cx="11.5" cy="10" rx="1.8" ry="1.4" fill="#ffffff" opacity="0.55" filter="url(#heartHighlightBlur)"/>
+</svg>
+`
+const savedMarkerIcon = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(savedMarkerSvg)}`
+
+// 사용자 위치 마커
 const userLocationSvg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
   <defs>
     <filter id="userGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
       <feMerge>
         <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
-  <circle cx="16" cy="16" r="12" fill="#4285F4" opacity="0.25" filter="url(#userGlow)"/>
-  <circle cx="16" cy="16" r="7" fill="#4285F4" stroke="#ffffff" stroke-width="2.5"/>
+  <circle cx="12" cy="12" r="9" fill="#4285F4" opacity="0.25" filter="url(#userGlow)"/>
+  <circle cx="12" cy="12" r="5" fill="#4285F4" stroke="#ffffff" stroke-width="2"/>
 </svg>
 `
 const userLocationIcon = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(userLocationSvg)}`
 
-function MapController({ targetCenter }) {
+function MapController({ targetCenter, targetZoom }) {
   const map = useMap()
   
   useEffect(() => {
     if (map && targetCenter) {
       map.panTo(targetCenter)
-      map.setZoom(15)
+      if (targetZoom) {
+        map.setZoom(targetZoom)
+      }
     }
-  }, [map, targetCenter])
+  }, [map, targetCenter, targetZoom])
   
   return null
 }
@@ -102,20 +168,23 @@ function MapPage() {
   const [locationError, setLocationError] = useState(null)
   const [isLocating, setIsLocating] = useState(false)
   const [moveTarget, setMoveTarget] = useState(null)
+  const [moveZoom, setMoveZoom] = useState(null)
   const [places, setPlaces] = useState([])
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(true)
-  
-  // 💜 컬렉션 저장 상태 관리
   const [savedPlaceIds, setSavedPlaceIds] = useState(new Set())
   const [isSaving, setIsSaving] = useState(false)
   const [toast, setToast] = useState(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  
+  // 도시 선택 상태
+  const [selectedCity, setSelectedCity] = useState(KOREA_CITIES[0]) // 기본값: 서울
+  const [isCityMenuOpen, setIsCityMenuOpen] = useState(false)
 
   const defaultCenter = {
     lat: 37.5665,
     lng: 126.9780
   }
 
-  // Firestore에서 장소 데이터 불러오기
   useEffect(() => {
     async function loadPlaces() {
       setIsLoadingPlaces(true)
@@ -126,7 +195,6 @@ function MapPage() {
     loadPlaces()
   }, [])
 
-  // 💜 로그인된 사용자의 컬렉션 상태 미리 불러오기
   useEffect(() => {
     async function loadSavedStatus() {
       if (!user || places.length === 0) {
@@ -144,7 +212,6 @@ function MapPage() {
     loadSavedStatus()
   }, [user, places])
 
-  // 토스트 메시지 자동 사라짐
   useEffect(() => {
     if (toast) {
       const timer = setTimeout(() => setToast(null), 2500)
@@ -169,6 +236,7 @@ function MapPage() {
         }
         setUserLocation(newLocation)
         setMoveTarget(newLocation)
+        setMoveZoom(15)
         setIsLocating(false)
       },
       (error) => {
@@ -191,6 +259,14 @@ function MapPage() {
     fetchUserLocation()
   }, [])
 
+  // 도시 선택 시 해당 도시로 이동
+  const handleCitySelect = (city) => {
+    setSelectedCity(city)
+    setMoveTarget({ lat: city.lat, lng: city.lng })
+    setMoveZoom(12)
+    setIsCityMenuOpen(false)
+  }
+
   const openKakaoMap = (place) => {
     const url = `https://map.kakao.com/link/to/${encodeURIComponent(place.name)},${place.lat},${place.lng}`
     window.open(url, '_blank')
@@ -206,7 +282,6 @@ function MapPage() {
     window.open(url, '_blank')
   }
 
-  // 💜 컬렉션 저장/삭제 토글
   const handleToggleCollection = async (place) => {
     if (!user) {
       setToast({ type: 'warning', message: '로그인이 필요해요!' })
@@ -217,7 +292,6 @@ function MapPage() {
     const isSaved = savedPlaceIds.has(place.id)
 
     if (isSaved) {
-      // 삭제
       const success = await removeFromCollection(user.uid, place.id)
       if (success) {
         const newSet = new Set(savedPlaceIds)
@@ -228,7 +302,6 @@ function MapPage() {
         setToast({ type: 'error', message: '삭제에 실패했어요' })
       }
     } else {
-      // 저장
       const success = await addToCollection(user.uid, place)
       if (success) {
         const newSet = new Set(savedPlaceIds)
@@ -242,112 +315,130 @@ function MapPage() {
     setIsSaving(false)
   }
 
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle()
+    } catch (error) {
+      alert('로그인에 실패했습니다.')
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      setIsMenuOpen(false)
+    } catch (error) {
+      alert('로그아웃에 실패했습니다.')
+    }
+  }
+
   const selectedPlace = places.find(p => p.id === selectedPlaceId)
   const isSelectedSaved = selectedPlace && savedPlaceIds.has(selectedPlace.id)
 
+  // 현재 도시의 장소 개수 (베타 단계: 서울만 데이터 있음)
+  const cityPlaceCount = selectedCity.id === 'seoul' ? places.length : 0
+
   return (
     <div className="app">
-      {/* 우상단 사용자 프로필 (로그인 시) */}
-      {user && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '32px',
-            right: '32px',
-            zIndex: 10,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '6px 12px 6px 6px',
-            background: 'rgba(139, 92, 246, 0.08)',
-            border: '1px solid rgba(139, 92, 246, 0.3)',
-            borderRadius: '100px',
-            color: '#c4b5fd',
-            fontSize: '13px',
-            fontWeight: '500',
-            fontFamily: 'Pretendard, sans-serif',
-            backdropFilter: 'blur(10px)'
-          }}
-        >
-          {user.photoURL ? (
-            <img
-              src={user.photoURL}
-              alt={user.displayName}
-              style={{
-                width: '24px',
-                height: '24px',
-                borderRadius: '50%',
-                border: '1px solid rgba(139, 92, 246, 0.5)'
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontSize: '11px',
-                fontWeight: '700'
-              }}
+      <div className="user-corner">
+        {user ? (
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="user-button"
             >
-              {user.displayName?.[0] || '?'}
-            </div>
-          )}
-          <span>{user.displayName?.split(' ')[0] || '사용자'}</span>
-        </div>
-      )}
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName}
+                  className="user-avatar"
+                />
+              ) : (
+                <div className="user-avatar-fallback">
+                  {user.displayName?.[0] || '?'}
+                </div>
+              )}
+              <span>{user.displayName?.split(' ')[0] || '사용자'}</span>
+            </button>
+
+            {isMenuOpen && (
+              <div className="user-dropdown">
+                <div className="user-dropdown-label">로그인됨</div>
+                <div className="user-dropdown-email">{user.email}</div>
+                
+                <Link
+                  to="/my"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="user-dropdown-link"
+                >
+                  💜 내 컬렉션
+                </Link>
+
+                <button onClick={handleSignOut} className="user-dropdown-button">
+                  로그아웃
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <button onClick={handleSignIn} className="login-button">
+            로그인
+          </button>
+        )}
+      </div>
 
       <header
         className="top-section"
         style={{ padding: '60px 32px 30px 32px' }}
       >
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
-          <Link
-            to="/"
-            className="brand-tagline"
-            style={{
-              textDecoration: 'none',
-              display: 'inline-block'
-            }}
-          >
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
+          <Link to="/" className="brand-tagline" style={{ textDecoration: 'none', display: 'inline-block' }}>
             ← 메인으로
           </Link>
           
           {user && (
-            <Link
-              to="/my"
-              style={{
-                textDecoration: 'none',
-                fontSize: '13px',
-                fontWeight: '600',
-                letterSpacing: '2px',
-                color: '#c4b5fd',
-                padding: '6px 14px',
-                border: '1px solid rgba(139, 92, 246, 0.4)',
-                borderRadius: '100px',
-                background: 'rgba(139, 92, 246, 0.08)',
-                backdropFilter: 'blur(10px)'
-              }}
-            >
+            <Link to="/my" className="map-collection-link">
               💜 내 컬렉션
             </Link>
           )}
         </div>
         
-        <h1 className="brand-name" style={{ fontSize: '32px' }}>
-          지도
-        </h1>
-        <p className="brand-tagline">
-          {isLoadingPlaces 
-            ? '장소를 불러오는 중...'
-            : `서울의 감각적인 공간 ${places.length}곳`
-          }
-        </p>
+        <h1 className="brand-name" style={{ fontSize: '32px' }}>지도</h1>
+        
+        {/* 도시 선택 + 장소 개수 */}
+        <div className="city-selector-wrap">
+          <button 
+            className="city-selector-btn"
+            onClick={() => setIsCityMenuOpen(!isCityMenuOpen)}
+          >
+            <span className="city-selector-name">{selectedCity.name}</span>
+            <span className="city-selector-arrow">{isCityMenuOpen ? '▲' : '▼'}</span>
+          </button>
+          
+          <span className="city-selector-text">
+            의 감각적인 공간 <strong>{isLoadingPlaces ? '...' : cityPlaceCount}</strong>곳
+          </span>
+
+          {/* 도시 선택 드롭다운 */}
+          {isCityMenuOpen && (
+            <div className="city-dropdown">
+              <div className="city-dropdown-grid">
+                {KOREA_CITIES.map((city) => (
+                  <button
+                    key={city.id}
+                    onClick={() => handleCitySelect(city)}
+                    className={`city-dropdown-item ${selectedCity.id === city.id ? 'active' : ''}`}
+                  >
+                    {city.name}
+                  </button>
+                ))}
+              </div>
+              <div className="city-dropdown-note">
+                * 베타 단계에서는 서울 지역만 데이터가 제공됩니다
+              </div>
+            </div>
+          )}
+        </div>
       </header>
 
       <main style={{ flex: 1, position: 'relative' }}>
@@ -357,36 +448,50 @@ function MapPage() {
             defaultCenter={defaultCenter}
             defaultZoom={13}
             gestureHandling="greedy"
-            disableDefaultUI={false}
+            disableDefaultUI={true}
+            zoomControl={false}
+            mapTypeControl={false}
+            scaleControl={false}
+            streetViewControl={false}
+            rotateControl={false}
+            fullscreenControl={false}
+            keyboardShortcuts={false}
             styles={curaMapStyle}
           >
-            <MapController targetCenter={moveTarget} />
+            <MapController targetCenter={moveTarget} targetZoom={moveZoom} />
 
             {userLocation && (
               <Marker
                 position={userLocation}
                 icon={{
                   url: userLocationIcon,
-                  scaledSize: { width: 32, height: 32 },
-                  anchor: { x: 16, y: 16 }
+                  scaledSize: { width: 24, height: 24 },
+                  anchor: { x: 12, y: 12 }
                 }}
                 title="내 위치"
               />
             )}
 
-            {places.map((place) => (
-              <Marker
-                key={place.id}
-                position={{ lat: place.lat, lng: place.lng }}
-                onClick={() => setSelectedPlaceId(place.id)}
-                icon={{
-                  url: curaMarkerIcon,
-                  scaledSize: { width: 40, height: 40 },
-                  anchor: { x: 20, y: 20 }
-                }}
-                title={place.name}
-              />
-            ))}
+            {places.map((place) => {
+              const isSaved = savedPlaceIds.has(place.id)
+              return (
+                <Marker
+                  key={place.id}
+                  position={{ lat: place.lat, lng: place.lng }}
+                  onClick={() => setSelectedPlaceId(place.id)}
+                  icon={{
+                    url: isSaved ? savedMarkerIcon : curaMarkerIcon,
+                    scaledSize: isSaved
+                    ? { width: 30, height: 30 } //
+                    : { width: 26.2, height: 26.2 }, //
+                    anchor: isSaved
+                    ? { x: 15, y: 15 }
+                    : { x:13.1, y: 13.1 }, //
+                  }}
+                  title={place.name}
+                />
+              )
+            })}
 
             {selectedPlace && (
               <InfoWindow
@@ -394,71 +499,40 @@ function MapPage() {
                 onCloseClick={() => setSelectedPlaceId(null)}
                 pixelOffset={[0, -20]}
               >
-                <div style={{ padding: '8px 4px', minWidth: '240px', fontFamily: 'Pretendard, sans-serif' }}>
+                <div className="info-window-content">
                   
-                  {/* 카테고리 + 하트 버튼 */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <div style={{ fontSize: '11px', color: '#8b5cf6', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                      {selectedPlace.category}
-                    </div>
+                  <div className="info-header">
+                    <div className="info-category">{selectedPlace.category}</div>
                     <button
                       onClick={() => handleToggleCollection(selectedPlace)}
                       disabled={isSaving}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: isSaving ? 'wait' : 'pointer',
-                        fontSize: '18px',
-                        padding: '2px 4px',
-                        lineHeight: '1'
-                      }}
+                      className="info-heart-btn"
                       title={isSelectedSaved ? '컬렉션에서 삭제' : '컬렉션에 저장'}
                     >
                       {isSelectedSaved ? '💜' : '🤍'}
                     </button>
                   </div>
 
-                  <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#1a0f2e', margin: '0 0 4px 0', letterSpacing: '-0.02em' }}>
-                    {selectedPlace.name}
-                  </h3>
-                  <p style={{ fontSize: '12px', color: '#6b5b95', margin: '0 0 6px 0' }}>
-                    {selectedPlace.address}
-                  </p>
+                  <h3 className="info-title">{selectedPlace.name}</h3>
+                  <p className="info-address">{selectedPlace.address}</p>
                   
                   {selectedPlace.description && (
-                    <p style={{ fontSize: '12px', color: '#5b4b85', margin: '0 0 10px 0', lineHeight: '1.5' }}>
-                      {selectedPlace.description}
-                    </p>
+                    <p className="info-description">{selectedPlace.description}</p>
                   )}
 
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '14px' }}>
+                  <div className="info-tags">
                     {selectedPlace.tags && selectedPlace.tags.map(tag => (
-                      <span key={tag} style={{ fontSize: '10px', padding: '3px 8px', borderRadius: '100px', background: 'rgba(139, 92, 246, 0.1)', color: '#7c3aed', fontWeight: '500' }}>
-                        #{tag}
+                      <span key={tag} className="info-tag">
+                        <span className="info-tag-hash">#</span>
+                        <span className="info-tag-text">{tag}</span>
                       </span>
                     ))}
                   </div>
 
-                  {/* 컬렉션 저장 버튼 (큰 버튼) */}
                   <button
                     onClick={() => handleToggleCollection(selectedPlace)}
                     disabled={isSaving}
-                    style={{
-                      width: '100%',
-                      padding: '9px 12px',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                      background: isSelectedSaved 
-                        ? 'rgba(139, 92, 246, 0.1)' 
-                        : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-                      color: isSelectedSaved ? '#7c3aed' : '#ffffff',
-                      border: isSelectedSaved ? '1px solid rgba(139, 92, 246, 0.4)' : 'none',
-                      borderRadius: '8px',
-                      cursor: isSaving ? 'wait' : 'pointer',
-                      marginBottom: '12px',
-                      fontFamily: 'Pretendard, sans-serif',
-                      transition: 'all 0.2s ease'
-                    }}
+                    className={isSelectedSaved ? 'info-save-btn-saved' : 'info-save-btn'}
                   >
                     {isSaving 
                       ? '⏳ 처리 중...' 
@@ -468,27 +542,19 @@ function MapPage() {
                     }
                   </button>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid rgba(139, 92, 246, 0.15)', paddingTop: '10px' }}>
-                    <div style={{ fontSize: '10px', color: '#9b8fc4', marginBottom: '2px', fontWeight: '500' }}>
-                      길찾기
-                    </div>
-                    <button
-                      onClick={() => openKakaoMap(selectedPlace)}
-                      style={{ padding: '7px 12px', fontSize: '12px', fontWeight: '600', background: '#FEE500', color: '#1a0f2e', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}
-                    >
-                      카카오맵으로
+                  <div className="info-directions">
+                    <div className="info-directions-label">길찾기</div>
+                    <button onClick={() => openKakaoMap(selectedPlace)} className="info-direction-btn info-direction-kakao">
+                      <span className="brand-logo brand-logo-kakao">K</span>
+                      <span>카카오맵으로</span>
                     </button>
-                    <button
-                      onClick={() => openNaverMap(selectedPlace)}
-                      style={{ padding: '7px 12px', fontSize: '12px', fontWeight: '600', background: '#03C75A', color: '#ffffff', border: 'none', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}
-                    >
-                      네이버지도로
+                    <button onClick={() => openNaverMap(selectedPlace)} className="info-direction-btn info-direction-naver">
+                      <span className="brand-logo brand-logo-naver">N</span>
+                      <span>네이버지도로</span>
                     </button>
-                    <button
-                      onClick={() => openGoogleMap(selectedPlace)}
-                      style={{ padding: '7px 12px', fontSize: '12px', fontWeight: '600', background: '#ffffff', color: '#1a0f2e', border: '1px solid #e8e2f5', borderRadius: '8px', cursor: 'pointer', textAlign: 'left' }}
-                    >
-                      구글맵으로
+                    <button onClick={() => openGoogleMap(selectedPlace)} className="info-direction-btn info-direction-google">
+                      <span className="brand-logo brand-logo-google">G</span>
+                      <span>구글맵으로</span>
                     </button>
                   </div>
                 </div>
@@ -496,79 +562,33 @@ function MapPage() {
             )}
           </Map>
 
-          {/* 토스트 알림 */}
           {toast && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '24px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                padding: '12px 20px',
-                background: toast.type === 'warning' 
-                  ? 'rgba(255, 180, 100, 0.95)'
-                  : toast.type === 'error'
-                  ? 'rgba(255, 100, 100, 0.95)'
-                  : toast.type === 'info'
-                  ? 'rgba(155, 143, 196, 0.95)'
-                  : 'rgba(139, 92, 246, 0.95)',
-                color: '#ffffff',
-                borderRadius: '100px',
-                fontSize: '13px',
-                fontWeight: '600',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-                backdropFilter: 'blur(10px)',
-                zIndex: 100,
-                fontFamily: 'Pretendard, sans-serif'
-              }}
-            >
+            <div className={`map-toast map-toast-${toast.type}`}>
               {toast.message}
             </div>
           )}
 
-          <button
-            onClick={fetchUserLocation}
-            disabled={isLocating}
-            style={{
-              position: 'absolute',
-              bottom: '24px',
-              right: '24px',
-              width: '52px',
-              height: '52px',
-              borderRadius: '50%',
-              border: '1px solid rgba(139, 92, 246, 0.3)',
-              background: 'rgba(26, 15, 46, 0.85)',
-              backdropFilter: 'blur(10px)',
-              cursor: isLocating ? 'wait' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '24px',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(139, 92, 246, 0.15)',
-              transition: 'all 0.2s ease',
-              zIndex: 5
-            }}
-            title="내 위치로 이동"
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(139, 92, 246, 0.4)'
-              e.currentTarget.style.transform = 'scale(1.05)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(26, 15, 46, 0.85)'
-              e.currentTarget.style.transform = 'scale(1)'
-            }}
-          >
-            {isLocating ? '⏳' : '📍'}
-          </button>
+          {/* 위치 버튼 + 라벨 */}
+          <div className="locate-btn-wrap">
+            <span className="locate-btn-label">내 위치</span>
+            <button
+              onClick={fetchUserLocation}
+              disabled={isLocating}
+              className="locate-btn"
+              title="내 위치"
+            >
+              {isLocating ? '⏳' : '📍'}
+            </button>
+          </div>
 
           {locationError && (
-            <div style={{ position: 'absolute', bottom: '90px', right: '24px', padding: '10px 16px', background: 'rgba(26, 15, 46, 0.95)', border: '1px solid rgba(255, 100, 100, 0.4)', borderRadius: '12px', color: '#ffaaaa', fontSize: '12px', maxWidth: '240px', backdropFilter: 'blur(10px)', zIndex: 5 }}>
+            <div className="location-error">
               ⚠ {locationError}
             </div>
           )}
 
           {isLoadingPlaces && (
-            <div style={{ position: 'absolute', top: '24px', left: '50%', transform: 'translateX(-50%)', padding: '8px 16px', background: 'rgba(26, 15, 46, 0.85)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '100px', color: '#c4b5fd', fontSize: '12px', backdropFilter: 'blur(10px)', zIndex: 5 }}>
+            <div className="map-loading">
               ✨ 장소를 불러오는 중...
             </div>
           )}

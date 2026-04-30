@@ -1,8 +1,11 @@
 /* ======================================
-   CURA 메인 디자인 v4
-   - 여백 대폭 확대 (2배)
-   - 구분선 완벽 대칭
-   - 섹션 간 명확한 구분
+   CURA 메인 디자인 v7
+   - 정보창 다크 + 글로우 제거
+   - 폰트 두께 조정
+   - 해시태그 간격
+   - 길찾기 버튼 가운데 정렬 + 브랜드 로고
+   - 도시 선택 드롭다운
+   - 위치 버튼 글로우 + 라벨
    ====================================== */
 
 .app {
@@ -16,14 +19,33 @@
 }
 
 /* ======================================
-   우상단 BETA 배지
+   ⭐ 우상단 영역 (메인 페이지)
    ====================================== */
-.beta-badge {
+.top-right-area {
   position: absolute;
   top: 32px;
   right: 32px;
   z-index: 10;
-  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-corner {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ======================================
+   BETA 배지
+   ====================================== */
+.beta-badge {
+  padding: 0 14px;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 2px;
@@ -32,12 +54,193 @@
   border-radius: 100px;
   background: rgba(139, 92, 246, 0.08);
   backdrop-filter: blur(10px);
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 /* ======================================
-   ⭐ 상단 영역 
-   - padding-top: 80 → 90
-   - padding-bottom: 40 → 100 (구분선 위 여백)
+   로그인 버튼 (BETA와 폰트 크기 통일)
+   ====================================== */
+.login-button {
+  padding: 0 14px;
+  height: 32px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 100px;
+  color: #c4b5fd;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  cursor: pointer;
+  font-family: 'Pretendard', sans-serif;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.login-button:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* ======================================
+   사용자 프로필 버튼 (BETA와 폰트 크기 통일)
+   ====================================== */
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px 0 5px;
+  height: 32px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 100px;
+  color: #c4b5fd;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  cursor: pointer;
+  font-family: 'Pretendard', sans-serif;
+  backdrop-filter: blur(10px);
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.user-button:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.user-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(139, 92, 246, 0.5);
+}
+
+.user-avatar-fallback {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ======================================
+   드롭다운 메뉴
+   ====================================== */
+.user-dropdown {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  min-width: 200px;
+  padding: 12px;
+  background: rgba(20, 12, 36, 0.97);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.user-dropdown-label {
+  font-size: 11px;
+  color: #9b8fc4;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.user-dropdown-email {
+  font-size: 13px;
+  color: #e8e2f5;
+  margin-bottom: 12px;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.user-dropdown-link {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  color: #e8e2f5;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  font-family: 'Pretendard', sans-serif;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.user-dropdown-link:hover {
+  background: rgba(139, 92, 246, 0.25);
+}
+
+.user-dropdown-button {
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  color: #c4b5fd;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Pretendard', sans-serif;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.user-dropdown-button:hover {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* ======================================
+   지도 페이지 - 내 컬렉션 링크
+   ====================================== */
+.map-collection-link {
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #c4b5fd;
+  padding: 0 14px;
+  height: 32px;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 100px;
+  background: rgba(139, 92, 246, 0.08);
+  backdrop-filter: blur(10px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.map-collection-link:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.6);
+}
+
+/* ======================================
+   상단 영역
    ====================================== */
 .top-section {
   text-align: center;
@@ -56,12 +259,8 @@
 }
 
 @keyframes logo-float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 .brand-name {
@@ -71,7 +270,6 @@
   margin: 0 0 14px 0;
   color: #f5f0ff;
   padding-left: 14px;
-  
   opacity: 0;
   animation: text-float-in 0.9s ease-out 0.2s forwards;
 }
@@ -83,24 +281,135 @@
   color: #9b8fc4;
   margin: 0;
   text-transform: uppercase;
-  
   opacity: 0;
   animation: text-float-in 0.9s ease-out 0.7s forwards;
 }
 
 @keyframes text-float-in {
-  0% {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* ======================================
-   ⭐ 구분선 (margin-top 제거 - 대칭 위해)
+   ⭐ 도시 선택 (지도 페이지)
+   ====================================== */
+.city-selector-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  position: relative;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.city-selector-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  font-family: 'Pretendard', sans-serif;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.city-selector-btn:hover {
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.city-selector-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #c4b5fd;
+  letter-spacing: 2px;
+  text-decoration: underline;
+  text-decoration-color: rgba(196, 181, 253, 0.5);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
+}
+
+.city-selector-arrow {
+  font-size: 9px;
+  color: #9b8fc4;
+}
+
+.city-selector-text {
+  font-size: 15px;
+  font-weight: 400;
+  color: #9b8fc4;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.city-selector-text strong {
+  color: #c4b5fd;
+  font-weight: 600;
+  margin: 0 2px;
+}
+
+/* 도시 선택 드롭다운 */
+.city-dropdown {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  padding: 14px;
+  background: rgba(20, 12, 36, 0.97);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  z-index: 50;
+}
+
+.city-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.city-dropdown-item {
+  padding: 8px 0;
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  border-radius: 8px;
+  color: #e8e2f5;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Pretendard', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.city-dropdown-item:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #f5f0ff;
+}
+
+.city-dropdown-item.active {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.6);
+  color: #f5f0ff;
+  font-weight: 600;
+}
+
+.city-dropdown-note {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
+  font-size: 11px;
+  color: #6b5b95;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* ======================================
+   구분선
    ====================================== */
 .divider {
   width: 100%;
@@ -118,9 +427,7 @@
 }
 
 /* ======================================
-   ⭐ 메인 영역 (여백 확대 + 대칭)
-   - padding-top: 40 → 97 (구분선 아래 여백)
-   - padding-bottom: 40 → 165 (카드 아래 여백)
+   메인 영역
    ====================================== */
 .main {
   flex: 1;
@@ -132,7 +439,6 @@
   z-index: 1;
 }
 
-/* 파도 글로우 */
 .gradient-bg {
   position: absolute;
   top: 0;
@@ -202,58 +508,26 @@
 }
 
 @keyframes glow-flow-1 {
-  0%, 100% {
-    transform: translateX(-80%) scale(1);
-    opacity: 0.7;
-  }
-  33% {
-    transform: translateX(-30%) scale(1.2);
-    opacity: 1;
-  }
-  66% {
-    transform: translateX(-70%) scale(0.9);
-    opacity: 0.8;
-  }
+  0%, 100% { transform: translateX(-80%) scale(1); opacity: 0.7; }
+  33% { transform: translateX(-30%) scale(1.2); opacity: 1; }
+  66% { transform: translateX(-70%) scale(0.9); opacity: 0.8; }
 }
 
 @keyframes glow-flow-2 {
-  0%, 100% {
-    transform: translateX(-20%) scale(1);
-    opacity: 0.6;
-  }
-  40% {
-    transform: translateX(-60%) scale(1.3);
-    opacity: 0.9;
-  }
-  70% {
-    transform: translateX(-10%) scale(1.1);
-    opacity: 0.7;
-  }
+  0%, 100% { transform: translateX(-20%) scale(1); opacity: 0.6; }
+  40% { transform: translateX(-60%) scale(1.3); opacity: 0.9; }
+  70% { transform: translateX(-10%) scale(1.1); opacity: 0.7; }
 }
 
 @keyframes glow-flow-3 {
-  0%, 100% {
-    transform: translate(-50%, 0) scale(1);
-    opacity: 0.5;
-  }
-  25% {
-    transform: translate(-30%, -20px) scale(1.1);
-    opacity: 0.8;
-  }
-  50% {
-    transform: translate(-60%, 10px) scale(0.95);
-    opacity: 0.6;
-  }
-  75% {
-    transform: translate(-40%, -10px) scale(1.15);
-    opacity: 0.9;
-  }
+  0%, 100% { transform: translate(-50%, 0) scale(1); opacity: 0.5; }
+  25% { transform: translate(-30%, -20px) scale(1.1); opacity: 0.8; }
+  50% { transform: translate(-60%, 10px) scale(0.95); opacity: 0.6; }
+  75% { transform: translate(-40%, -10px) scale(1.15); opacity: 0.9; }
 }
 
 /* ======================================
-   ⭐ Hero 섹션 (여백 확대)
-   - padding-top: 80 → 0 (main이 담당)
-   - padding-bottom: 120 → 155 (Hero ↔ 카드 간격)
+   Hero 섹션
    ====================================== */
 .hero {
   text-align: center;
@@ -305,6 +579,12 @@
   border-radius: 100px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 140px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  font-family: 'Pretendard', sans-serif;
+  border: none;
 }
 
 .btn-primary {
@@ -337,11 +617,9 @@
   border-color: rgba(139, 92, 246, 0.5);
   color: #f5f0ff;
 }
-
 /* ======================================
-   ⭐ Feature 카드 (균형 잡힌 여백 버전)
+   Feature 카드
    ====================================== */
-
 .features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -366,20 +644,19 @@
   transform: translateY(-4px);
 }
 
-/* 🔥 핵심 수정 부분 */
 .feature-number {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 2px;
   color: #8b5cf6;
-  margin-bottom: 20px; /* ↓ 기존 24 → 20 */
+  margin-bottom: 20px;
 }
 
 .feature-title {
   font-size: 20px;
   font-weight: 600;
   color: #f5f0ff;
-  margin-bottom: 16px; /* ↑ 기존 12 → 16 */
+  margin-bottom: 16px;
   letter-spacing: -0.02em;
 }
 
@@ -388,7 +665,7 @@
   color: #9b8fc4;
   line-height: 1.7;
   font-weight: 400;
-  margin-bottom: 28px; /* ✅ 새로 추가 */
+  margin-bottom: 28px;
 }
 
 /* ======================================
@@ -419,15 +696,474 @@
 }
 
 /* ======================================
-   ⭐ 반응형 (모바일) - 여백 비율 유지
+   ⭐ 마커 정보창 (다크 + 글로우 제거)
+   ====================================== */
+
+/* Google InfoWindow 기본 흰색 배경 제거 + 글로우 제거 */
+.gm-style .gm-style-iw-c {
+  background: #1a1a20 !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(139, 92, 246, 0.2) !important;
+  max-width: 280px !important;
+}
+
+.gm-style .gm-style-iw-d {
+  background: #1a1a20 !important;
+  overflow: hidden !important;
+  max-width: 280px !important;
+}
+
+.gm-style .gm-style-iw-tc::after {
+  background: #1a1a20 !important;
+}
+
+.gm-style .gm-style-iw-chr {
+  background: transparent !important;
+}
+
+.gm-style .gm-ui-hover-effect {
+  background: transparent !important;
+  opacity: 0.6 !important;
+  filter: invert(1) !important;
+}
+
+.gm-style .gm-ui-hover-effect:hover {
+  opacity: 1 !important;
+}
+
+/* ⭐ 정보창 컨텐츠 - 위/아래 여백 동일 */
+.info-window-content {
+  padding: 18px 18px 18px 18px;
+  min-width: 240px;
+  font-family: 'Pretendard', sans-serif;
+  background: #1a1a20;
+  color: #e8e2f5;
+}
+
+.info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.info-category {
+  font-size: 11px;
+  color: #a78bfa;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.info-heart-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.info-heart-btn:hover {
+  transform: scale(1.15);
+}
+
+.info-heart-btn:disabled {
+  cursor: wait;
+}
+
+.info-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f5f0ff;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+}
+
+/* ⭐ 주소 - 한 단계 두꺼운 폰트 */
+.info-address {
+  font-size: 12px;
+  color: #b8aed4;
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* ⭐ description - 일반 두께 */
+.info-description {
+  font-size: 12px;
+  color: #c4b5fd;
+  margin: 0 0 14px 0;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.info-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 18px;
+}
+
+/* ⭐ 해시태그 - # 와 텍스트 사이 여백 */
+.info-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  background: rgba(139, 92, 246, 0.15);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.info-tag-hash {
+  font-size: 10px;
+  color: #a78bfa;
+  font-weight: 700;
+}
+
+.info-tag-text {
+  font-size: 10px;
+  color: #c4b5fd;
+}
+
+/* 컬렉션 저장 버튼 */
+.info-save-btn {
+  width: 100%;
+  padding: 11px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 18px;
+  font-family: 'Pretendard', sans-serif;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.info-save-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+}
+
+.info-save-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.info-save-btn-saved {
+  width: 100%;
+  padding: 11px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(139, 92, 246, 0.15);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 18px;
+  font-family: 'Pretendard', sans-serif;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.info-save-btn-saved:hover {
+  background: rgba(139, 92, 246, 0.25);
+}
+
+.info-save-btn-saved:disabled {
+  cursor: wait;
+}
+
+/* ⭐ 길찾기 섹션 - 위 여백 충분히 */
+.info-directions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(139, 92, 246, 0.15);
+  padding-top: 18px;
+  margin-top: 4px;
+}
+
+.info-directions-label {
+  font-size: 10px;
+  color: #9b8fc4;
+  margin-bottom: 6px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ⭐ 길찾기 버튼 - 가운데 정렬 + 브랜드 로고 */
+.info-direction-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Pretendard', sans-serif;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.info-direction-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 브랜드 로고 (원형 아이콘) */
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.brand-logo-kakao {
+  background: #1a0f2e;
+  color: #FEE500;
+}
+
+.brand-logo-naver {
+  background: #ffffff;
+  color: #03C75A;
+}
+
+.brand-logo-google {
+  background: linear-gradient(135deg, #4285F4 0%, #34A853 33%, #FBBC04 66%, #EA4335 100%);
+  color: #ffffff;
+}
+
+.info-direction-kakao {
+  background: #FEE500;
+  color: #1a0f2e;
+}
+
+.info-direction-naver {
+  background: #03C75A;
+  color: #ffffff;
+}
+
+.info-direction-google {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8e2f5;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.info-direction-google:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* ======================================
+   토스트 알림
+   ====================================== */
+.map-toast {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 22px;
+  color: #ffffff;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  font-family: 'Pretendard', sans-serif;
+  letter-spacing: 0.3px;
+}
+
+.map-toast-warning { background: rgba(255, 180, 100, 0.95); }
+.map-toast-error { background: rgba(255, 100, 100, 0.95); }
+.map-toast-info { background: rgba(155, 143, 196, 0.95); }
+.map-toast-success { background: rgba(139, 92, 246, 0.95); }
+
+/* ======================================
+   ⭐ 위치 버튼 + 라벨 (보라 글로우)
+   ====================================== */
+.locate-btn-wrap {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 5;
+}
+
+.locate-btn-label {
+  padding: 8px 14px;
+  background: rgba(20, 12, 36, 0.92);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 100px;
+  color: #c4b5fd;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-family: 'Pretendard', sans-serif;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+  white-space: nowrap;
+}
+
+.locate-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(139, 92, 246, 0.5);
+  background: rgba(20, 12, 36, 0.9);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(139, 92, 246, 0.5),
+    0 0 60px rgba(139, 92, 246, 0.25);
+  transition: all 0.2s ease;
+  animation: locate-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes locate-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(139, 92, 246, 0.5),
+      0 0 60px rgba(139, 92, 246, 0.25);
+  }
+  50% {
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.4),
+      0 0 40px rgba(139, 92, 246, 0.7),
+      0 0 80px rgba(139, 92, 246, 0.4);
+  }
+}
+
+.locate-btn:hover {
+  background: rgba(139, 92, 246, 0.4);
+  transform: scale(1.05);
+  border-color: rgba(139, 92, 246, 0.7);
+}
+
+.locate-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+/* ======================================
+   위치 에러 / 로딩 상태
+   ====================================== */
+.location-error {
+  position: absolute;
+  bottom: 90px;
+  right: 24px;
+  padding: 10px 16px;
+  background: rgba(20, 12, 36, 0.95);
+  border: 1px solid rgba(255, 100, 100, 0.4);
+  border-radius: 12px;
+  color: #ffaaaa;
+  font-size: 12px;
+  max-width: 240px;
+  backdrop-filter: blur(10px);
+  z-index: 5;
+}
+
+.map-loading {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  background: rgba(20, 12, 36, 0.9);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 100px;
+  color: #c4b5fd;
+  font-size: 12px;
+  backdrop-filter: blur(10px);
+  z-index: 5;
+}
+
+/* ======================================
+   Google Maps UI 숨김
+   ====================================== */
+.gm-style-cc,
+.gmnoprint,
+.gm-style a[href^="https://maps.google.com/maps"],
+.gm-style a[href^="https://www.google.com/maps"],
+.gm-style-mtc,
+.gm-fullscreen-control,
+.gm-svpc {
+  display: none !important;
+}
+
+/* ======================================
+   ⭐ 반응형 (모바일)
    ====================================== */
 @media (max-width: 768px) {
-  .beta-badge {
+  
+  .top-right-area,
+  .user-corner {
     top: 20px;
     right: 20px;
+    gap: 8px;
   }
 
-  /* 모바일: 상단 100px, 구분선 위 60px */
+  .beta-badge {
+    padding: 0 12px;
+    height: 30px;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+
+  .login-button {
+    padding: 0 12px;
+    height: 30px;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+
+  .user-button {
+    height: 30px;
+    padding: 0 12px 0 4px;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    gap: 6px;
+  }
+
+  .user-avatar,
+  .user-avatar-fallback {
+    width: 22px;
+    height: 22px;
+  }
+
+  .map-collection-link {
+    height: 30px;
+    padding: 0 12px;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
   .top-section {
     padding: 100px 24px 60px 24px;
   }
@@ -449,12 +1185,27 @@
     letter-spacing: 3px;
   }
 
-  /* 모바일: 구분선 아래 60px, 카드 아래 120px */
+  .city-selector-name {
+    font-size: 14px;
+  }
+
+  .city-selector-text {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+
+  .city-dropdown {
+    width: 290px;
+  }
+
+  .city-dropdown-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
   .main {
     padding: 60px 24px 120px 24px;
   }
 
-  /* 모바일: Hero ↔ 카드 140px */
   .hero {
     padding: 0 0 140px 0;
   }
@@ -470,6 +1221,7 @@
 
   .btn {
     width: 100%;
+    min-width: unset;
   }
 
   .features {
@@ -479,5 +1231,35 @@
 
   .feature-card {
     padding: 32px 24px;
+  }
+
+  .info-window-content {
+    min-width: 220px;
+    padding: 16px;
+  }
+
+  .info-title {
+    font-size: 17px;
+  }
+
+  .locate-btn-wrap {
+    bottom: 20px;
+    right: 20px;
+    gap: 8px;
+  }
+
+  .locate-btn-label {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .locate-btn {
+    width: 46px;
+    height: 46px;
+    font-size: 22px;
+  }
+
+  .user-dropdown {
+    min-width: 180px;
   }
 }
