@@ -6,6 +6,8 @@ import { useUserStore } from './store/userStore.js'
 import HomePage from './pages/HomePage'
 import MapPage from './pages/MapPage'
 import MyCollectionsPage from './pages/MyCollectionsPage'
+import MagazinePage from './pages/MagazinePage'
+import SettingsPage from './pages/SettingsPage'
 
 function App() {
   const setUser = useUserStore((state) => state.setUser)
@@ -33,6 +35,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/my" element={<MyCollectionsPage />} />
+        <Route path="/magazine" element={<MagazinePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </BrowserRouter>
   )
