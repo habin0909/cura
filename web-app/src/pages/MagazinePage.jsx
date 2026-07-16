@@ -1,75 +1,133 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useUserStore } from '../store/userStore.js'
 import '../App.css'
 
 import magazineHero from '../assets/magazine-hero.png'
-import magazine1 from '../assets/magazine-1.jpg'
-import magazine2 from '../assets/magazine-2.png'
-import magazine3 from '../assets/magazine-3.jpg'
-import magazine4 from '../assets/magazine-4.png'
-import magazine5 from '../assets/magazine-5.png'
-import magazine6 from '../assets/magazine-6.png'
+import place1Page1 from '../assets/place1-page1.jpg'
+import place1Page2 from '../assets/place1-page2.jpg'
+import place2Page1 from '../assets/place2-page1.png'
+import place2Page2 from '../assets/place2-page2.jpg'
+import place2Page3 from '../assets/place2-page3.jpg'
+import place3Page1 from '../assets/place3-page1.jpg'
+import place3Page2 from '../assets/place3-page2.png'
+import place4Page1 from '../assets/place4-page1.png'
+import place4Page2 from '../assets/place4-page2.png'
+import place5Page1 from '../assets/place5-page1.png'
+import place5Page2 from '../assets/place5-page2.png'
+import place6Page1 from '../assets/place6-page1.png'
+import place6Page2 from '../assets/place6-page2.png'
 
 const MAGAZINE_HERO = {
   id: 'hero',
   image: magazineHero,
-  title: '완벽한 날씨, 딱 맞는 플레이리스트',
-  subtitle: '오늘의 비건식, 양재천 산책까지',
+  title: '봄맞이 길거리 야장 모음집',
+  subtitle: '봄, 기다려왔던 길먹의 낭만',
   category: 'EDITOR PICK'
 }
 
 const MAGAZINE_ITEMS = [
   {
     id: 'item-1',
-    image: magazine1,
-    title: '음 이터리',
-    subtitle: '글루텐 프리, 비건 친화 다이닝',
-    category: '식당',
-    location: '서울시 강남구',
-  },
-  {
-    id: 'item-2',
-    image: magazine2,
-    title: '맥스 시덴토프 개인전',
-    subtitle: '복잡한 세상, 편하게 살자',
-    category: '전시',
-    location: '서울 중구 그랜드센트럴',
-  },
-  {
-    id: 'item-3',
-    image: magazine3,
-    title: '달맞이 광장 바베큐 본점',
-    subtitle: '주말 웨이팅 1000팀의 이유',
-    category: '식당',
-    location: '서울 중구 을지로',
-  },
-  {
-    id: 'item-4',
-    image: magazine4,
-    title: '노들섬',
-    subtitle: '도심 속 작은 섬, 한산한 정취',
-    category: '공원',
-    location: '서울시 용산구',
-  },
-  {
-    id: 'item-5',
-    image: magazine5,
-    title: '라익스',
-    subtitle: '서울 속 작은 이탈리아, 정통 화덕피자',
-    category: '식당',
-    location: '서울 중구 다산로',
-  },
-  {
-    id: 'item-6',
-    image: magazine6,
+    thumbnail: place1Page1,
     title: '플랫 오 (plat o.)',
     subtitle: '비건 친화, 가치 있는 한 접시',
     category: '식당',
     location: '서울시 서초구 양재천로',
+    pages: [
+      { image: place1Page1 },
+      { image: place1Page2 }
+    ]
+  },
+  {
+    id: 'item-2',
+    thumbnail: place2Page1,
+    title: '음 이터리',
+    subtitle: '글루텐 프리, 비건 친화 다이닝',
+    category: '식당',
+    location: '서울시 강남구',
+    pages: [
+      { image: place2Page1 },
+      { image: place2Page2 },
+      { image: place2Page3 }
+    ]
+  },
+  {
+    id: 'item-3',
+    thumbnail: place3Page1,
+    title: '노들섬',
+    subtitle: '도심 속 작은 섬, 한산한 정취',
+    category: '공원',
+    location: '서울시 용산구',
+    pages: [
+      { image: place3Page1 },
+      { image: place3Page2 }
+    ]
+  },
+  {
+    id: 'item-4',
+    thumbnail: place4Page1,
+    title: '달맞이 광장 바베큐 본점',
+    subtitle: '주말 웨이팅 1000팀의 이유',
+    category: '식당',
+    location: '서울 중구 을지로',
+    pages: [
+      { image: place4Page1 },
+      { image: place4Page2 }
+    ]
+  },
+  {
+    id: 'item-5',
+    thumbnail: place5Page1,
+    title: '맥스 시덴토프 개인전',
+    subtitle: '복잡한 세상, 편하게 살자',
+    category: '전시',
+    location: '서울 중구 그랜드센트럴',
+    pages: [
+      { image: place5Page1 },
+      { image: place5Page2 }
+    ]
+  },
+  {
+    id: 'item-6',
+    thumbnail: place6Page1,
+    title: '라익스',
+    subtitle: '서울 속 작은 이탈리아, 정통 화덕피자',
+    category: '식당',
+    location: '서울 중구 다산로',
+    pages: [
+      { image: place6Page1 },
+      { image: place6Page2 }
+    ]
   }
 ]
 
 function MagazinePage() {
+  const [selectedItem, setSelectedItem] = useState(null)
+  const [currentPage, setCurrentPage] = useState(0)
+
+  const openModal = (item) => {
+    setSelectedItem(item)
+    setCurrentPage(0)
+  }
+
+  const closeModal = () => {
+    setSelectedItem(null)
+    setCurrentPage(0)
+  }
+
+  const nextPage = () => {
+    if (selectedItem && currentPage < selectedItem.pages.length - 1) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+
+  const prevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+
   return (
     <div className="app">
       <header className="top-section" style={{ padding: '60px 32px 30px 32px' }}>
@@ -94,9 +152,14 @@ function MagazinePage() {
 
         <div className="magazine-grid">
           {MAGAZINE_ITEMS.map((item) => (
-            <div key={item.id} className="magazine-card">
+            <div 
+              key={item.id} 
+              className="magazine-card"
+              onClick={() => openModal(item)}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="magazine-card-img-wrap">
-                <img src={item.image} alt={item.title} className="magazine-card-img" />
+                <img src={item.thumbnail} alt={item.title} className="magazine-card-img" />
                 <span className="magazine-card-category">{item.category}</span>
               </div>
               <div className="magazine-card-content">
@@ -108,6 +171,55 @@ function MagazinePage() {
           ))}
         </div>
       </main>
+
+      {selectedItem && (
+        <div className="magazine-modal-overlay" onClick={closeModal}>
+          <div className="magazine-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="magazine-modal-close" onClick={closeModal}>
+              ✕
+            </button>
+
+            <div className="magazine-modal-content">
+              <img 
+                src={selectedItem.pages[currentPage].image} 
+                alt={`${selectedItem.title} ${currentPage + 1}페이지`}
+                className="magazine-modal-img"
+              />
+            </div>
+
+            {selectedItem.pages.length > 1 && (
+              <>
+                {currentPage > 0 && (
+                  <button className="magazine-modal-nav magazine-modal-prev" onClick={prevPage}>
+                    ‹
+                  </button>
+                )}
+                
+                {currentPage < selectedItem.pages.length - 1 && (
+                  <button className="magazine-modal-nav magazine-modal-next" onClick={nextPage}>
+                    ›
+                  </button>
+                )}
+
+                <div className="magazine-modal-dots">
+                  {selectedItem.pages.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`magazine-modal-dot ${index === currentPage ? 'active' : ''}`}
+                      onClick={() => setCurrentPage(index)}
+                      aria-label={`${index + 1}페이지로 이동`}
+                    />
+                  ))}
+                </div>
+
+                <div className="magazine-modal-counter">
+                  {currentPage + 1} / {selectedItem.pages.length}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       <BottomNav active="magazine" />
     </div>
@@ -139,7 +251,7 @@ function BottomNav({ active }) {
         </svg>
         <span>매거진</span>
       </Link>
-      <Link to={user ? "/my" : "/"} className={`bottom-nav-item ${active === 'menu' ? 'active' : ''}`}>
+      <Link to="/settings" className={`bottom-nav-item ${active === 'menu' ? 'active' : ''}`}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="3" y1="12" x2="21" y2="12"/>
           <line x1="3" y1="6" x2="21" y2="6"/>

@@ -10,10 +10,9 @@ import {
 import { fetchAllPlaces } from '../lib/places'
 import { addToCollection, removeFromCollection, isInCollection } from '../lib/collections'
 import { useUserStore } from '../store/userStore.js'
-import { signInWithGoogle, signOut } from '../lib/auth'
+import { BottomNav } from './MagazinePage'
 import '../App.css'
 
-// CURA 미니멀 차콜 + 보라 라벨 v6
 const curaMapStyle = [
   { elementType: 'geometry', stylers: [{ color: '#2a2a30' }] },
   { elementType: 'labels.text.fill', stylers: [{ color: '#a8a0c4' }] },
@@ -42,7 +41,6 @@ const curaMapStyle = [
   { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#0a0613' }, { weight: 2 }] }
 ]
 
-// 17개 시·도 정보 (시청/도청 좌표)
 const KOREA_CITIES = [
   { id: 'seoul', name: '서울', fullName: '서울특별시', lat: 37.5665, lng: 126.9780 },
   { id: 'busan', name: '부산', fullName: '부산광역시', lat: 35.1796, lng: 129.0756 },
@@ -63,7 +61,6 @@ const KOREA_CITIES = [
   { id: 'jeju', name: '제주', fullName: '제주특별자치도', lat: 33.4996, lng: 126.5312 }
 ]
 
-// 기본 마커 (저장 안 됨) - 하트와 동일한 19px 가로폭
 const curaMarkerSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 30 30">
   <defs>
@@ -87,7 +84,6 @@ const curaMarkerSvg = `
 `
 const curaMarkerIcon = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(curaMarkerSvg)}`
 
-// 💜 저장된 마커 (원형 마커와 통일감 - 흰색 외곽선 + 보라 블러 글로우) - 30px
 const savedMarkerSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
   <defs>
@@ -107,9 +103,7 @@ const savedMarkerSvg = `
       <feGaussianBlur stdDeviation="0.8"/>
     </filter>
   </defs>
-  <!-- 보라 블러 글로우 (원형 마커와 통일) -->
   <ellipse cx="15" cy="16" rx="11" ry="10.5" fill="#8b5cf6" opacity="0.3" filter="url(#heartGlow)"/>
-  <!-- 가로폭 19px 하트 + 흰색 외곽선 -->
   <path d="M15 25 
            C 15 25, 5.5 18, 5.5 11.5 
            C 5.5 8.2, 7.5 5.8, 10.2 5.8 
@@ -121,13 +115,11 @@ const savedMarkerSvg = `
         stroke="#f5f0ff"
         stroke-width="1.8"
         stroke-linejoin="round"/>
-  <!-- 자연스러운 블러 하이라이트 -->
   <ellipse cx="11.5" cy="10" rx="1.8" ry="1.4" fill="#ffffff" opacity="0.55" filter="url(#heartHighlightBlur)"/>
 </svg>
 `
 const savedMarkerIcon = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(savedMarkerSvg)}`
 
-// 사용자 위치 마커
 const userLocationSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
   <defs>
@@ -174,10 +166,8 @@ function MapPage() {
   const [savedPlaceIds, setSavedPlaceIds] = useState(new Set())
   const [isSaving, setIsSaving] = useState(false)
   const [toast, setToast] = useState(null)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   
-  // 도시 선택 상태
-  const [selectedCity, setSelectedCity] = useState(KOREA_CITIES[0]) // 기본값: 서울
+  const [selectedCity, setSelectedCity] = useState(KOREA_CITIES[0])
   const [isCityMenuOpen, setIsCityMenuOpen] = useState(false)
 
   const defaultCenter = {
@@ -259,7 +249,6 @@ function MapPage() {
     fetchUserLocation()
   }, [])
 
-  // 도시 선택 시 해당 도시로 이동
   const handleCitySelect = (city) => {
     setSelectedCity(city)
     setMoveTarget({ lat: city.lat, lng: city.lng })
@@ -315,81 +304,15 @@ function MapPage() {
     setIsSaving(false)
   }
 
-  const handleSignIn = async () => {
-    try {
-      await signInWithGoogle()
-    } catch (error) {
-      alert('로그인에 실패했습니다.')
-    }
-  }
-
-  const handleSignOut = async () => {
-    try {
-      await signOut()
-      setIsMenuOpen(false)
-    } catch (error) {
-      alert('로그아웃에 실패했습니다.')
-    }
-  }
-
   const selectedPlace = places.find(p => p.id === selectedPlaceId)
   const isSelectedSaved = selectedPlace && savedPlaceIds.has(selectedPlace.id)
-
-  // 현재 도시의 장소 개수 (베타 단계: 서울만 데이터 있음)
   const cityPlaceCount = selectedCity.id === 'seoul' ? places.length : 0
 
   return (
     <div className="app">
-      <div className="user-corner">
-        {user ? (
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="user-button"
-            >
-              {user.photoURL ? (
-                <img
-                  src={user.photoURL}
-                  alt={user.displayName}
-                  className="user-avatar"
-                />
-              ) : (
-                <div className="user-avatar-fallback">
-                  {user.displayName?.[0] || '?'}
-                </div>
-              )}
-              <span>{user.displayName?.split(' ')[0] || '사용자'}</span>
-            </button>
-
-            {isMenuOpen && (
-              <div className="user-dropdown">
-                <div className="user-dropdown-label">로그인됨</div>
-                <div className="user-dropdown-email">{user.email}</div>
-                
-                <Link
-                  to="/my"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="user-dropdown-link"
-                >
-                  💜 내 컬렉션
-                </Link>
-
-                <button onClick={handleSignOut} className="user-dropdown-button">
-                  로그아웃
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <button onClick={handleSignIn} className="login-button">
-            로그인
-          </button>
-        )}
-      </div>
-
       <header
         className="top-section"
-        style={{ padding: '60px 32px 30px 32px' }}
+        style={{ padding: '32px 32px 30px 32px' }}
       >
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
           <Link to="/" className="brand-tagline" style={{ textDecoration: 'none', display: 'inline-block' }}>
@@ -405,7 +328,6 @@ function MapPage() {
         
         <h1 className="brand-name" style={{ fontSize: '32px' }}>지도</h1>
         
-        {/* 도시 선택 + 장소 개수 */}
         <div className="city-selector-wrap">
           <button 
             className="city-selector-btn"
@@ -419,7 +341,6 @@ function MapPage() {
             의 감각적인 공간 <strong>{isLoadingPlaces ? '...' : cityPlaceCount}</strong>곳
           </span>
 
-          {/* 도시 선택 드롭다운 */}
           {isCityMenuOpen && (
             <div className="city-dropdown">
               <div className="city-dropdown-grid">
@@ -482,11 +403,11 @@ function MapPage() {
                   icon={{
                     url: isSaved ? savedMarkerIcon : curaMarkerIcon,
                     scaledSize: isSaved
-                    ? { width: 30, height: 30 } //
-                    : { width: 26.2, height: 26.2 }, //
+                      ? { width: 30, height: 30 }
+                      : { width: 26.2, height: 26.2 },
                     anchor: isSaved
-                    ? { x: 15, y: 15 }
-                    : { x:13.1, y: 13.1 }, //
+                      ? { x: 15, y: 15 }
+                      : { x: 13.1, y: 13.1 },
                   }}
                   title={place.name}
                 />
@@ -500,7 +421,6 @@ function MapPage() {
                 pixelOffset={[0, -20]}
               >
                 <div className="info-window-content">
-                  
                   <div className="info-header">
                     <div className="info-category">{selectedPlace.category}</div>
                     <button
@@ -568,7 +488,6 @@ function MapPage() {
             </div>
           )}
 
-          {/* 위치 버튼 + 라벨 */}
           <div className="locate-btn-wrap">
             <span className="locate-btn-label">내 위치</span>
             <button
@@ -594,6 +513,8 @@ function MapPage() {
           )}
         </APIProvider>
       </main>
+
+      <BottomNav active="map" />
     </div>
   )
 }

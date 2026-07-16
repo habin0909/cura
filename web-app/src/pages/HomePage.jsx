@@ -7,14 +7,14 @@ import '../App.css'
 import curaLogo from '../assets/cura-logo.png'
 
 import magazineHero from '../assets/magazine-hero.png'
-import magazine1 from '../assets/magazine-1.jpg'
-import magazine2 from '../assets/magazine-2.png'
-import magazine3 from '../assets/magazine-3.jpg'
+import magazine1 from '../assets/place1-page1.jpg'
+import magazine2 from '../assets/place2-page1.png'
+import magazine3 from '../assets/place3-page1.jpg'
 
 const HOME_MAGAZINE_PREVIEW = [
-  { id: 1, image: magazine1, title: '음 이터리', category: '식당' },
-  { id: 2, image: magazine2, title: '맥스 시덴토프', category: '전시' },
-  { id: 3, image: magazine3, title: '달맞이 광장', category: '식당' }
+  { id: 1, image: magazine1, title: '플랫 오 (plat o.)', category: '식당' },
+  { id: 2, image: magazine2, title: '음 이터리', category: '식당' },
+  { id: 3, image: magazine3, title: '노들섬', category: '공원' }
 ]
 
 function HomePage() {
@@ -127,8 +127,8 @@ function HomePage() {
             <img src={magazineHero} alt="매거진 메인" className="home-magazine-hero-img" />
             <div className="home-magazine-hero-overlay">
               <span className="home-magazine-hero-category">EDITOR PICK</span>
-              <h3 className="home-magazine-hero-title">완벽한 날씨, 딱 맞는 플레이리스트</h3>
-              <p className="home-magazine-hero-subtitle">오늘의 비건식, 양재천 산책까지</p>
+              <h3 className="home-magazine-hero-title">봄맞이 길거리 야장 모음집</h3>
+              <p className="home-magazine-hero-subtitle">봄, 기다려왔던 길먹의 낭만</p>
             </div>
           </Link>
 
